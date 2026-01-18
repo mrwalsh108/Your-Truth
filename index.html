@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Truth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Lato:wght@300;400;700&display=swap');
+        
+        :root {
+            --bg-main: #fdf2f8;
+            --bg-gradient-1: #fbcfe8;
+            --bg-gradient-2: #fce7f3;
+            --orb-color: #9d174d;
+            --bar-color: #db2777;
+            --btn-color: #ff007f;
+            --panel-bg: rgba(255, 255, 255, 0.4);
+        }
+
+        .lime-mode {
+            --bg-main: #f7fee7;
+            --bg-gradient-1: #d9f99d;
+            --bg-gradient-2: #bef264;
+            --orb-color: #65a30d; 
+            --bar-color: #84cc16; 
+            --btn-color: #a3e635; 
+            --panel-bg: rgba(255, 255, 255, 0.6);
+        }
+
+        .void-mode {
+            --bg-main: #000000;
+            --bg-gradient-1: #000000;
+            --bg-gradient-2: #000000;
+            --panel-bg: rgba(0, 0, 0, 1);
+        }
+
+        .iron-mode {
+            --bg-main: #f3f4f6;
+            --bg-gradient-1: #d1d5db;
+            --bg-gradient-2: #9ca3af;
+            --panel-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-main);
+            overflow: hidden;
+            touch-action: manipulation;
+            transition: background-color 0.8s ease;
+        }
+
+        .big-button-trigger {
+            font-family: 'UnifrakturMaguntia', serif;
+            color: #db2777;
+            background: #fdf2f8;
+            padding: 2rem 4rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            border: 1px solid rgba(219, 39, 119, 0.2);
+            user-select: none;
+            box-shadow: 0 15px 35px rgba(219, 39, 119, 0.25), 0 5px 15px rgba(0, 0, 0, 0.1), inset 0 2px 5px rgba(255, 255, 255, 0.8);
+            text-shadow: 0 1px 0 #be185d, 0 2px 0 #9d174d, 0 3px 0 #831843, 0 8px 15px rgba(0,0,0,0.2);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            line-height: 1.2;
+        }
+
+        .big-button-trigger:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 10px rgba(219, 39, 119, 0.1), inset 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .orb {
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--orb-color) 0%, rgba(255,255,255,0) 75%);
+            opacity: 0.1;
+            transform: scale(0.8);
+            filter: blur(20px);
+            transition: all 0.5s ease-in-out;
+        }
+
+        .orb.active {
+            opacity: 1;
+            transform: scale(1.3);
+            filter: blur(35px);
+        }
+
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.8s ease;
+        }
+
+        .action-btn {
+            background-color: var(--btn-color);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .yellow-void-btn {
+            background-color: #facc15;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(250, 204, 21, 0.4);
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .blue-tri-btn {
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-bottom: 45px solid #3b82f6;
+            filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.4));
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 50;
+            cursor: pointer;
+            border-top: 0;
+            background: transparent;
+            padding: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .hidden-content { opacity: 0; pointer-events: none; }
+
+        #iron-lady {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 60;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .iron-lady-svg {
+            width: 300px;
+            height: 400px;
+            fill: #1e3a8a;
+        }
+
+        #star-field {
+            position: absolute;
+            inset: 0;
+            z-index: -5;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col items-center justify-center relative">
+
+    <div id="star-field"></div>
+
+    <button id="void-btn" class="yellow-void-btn"></button>
+    <button id="iron-btn" class="blue-tri-btn"></button>
+
+    <div id="iron-lady">
+        <svg class="iron-lady-svg" viewBox="0 0 100 120">
+            <path d="M20,40 Q20,10 50,10 Q80,10 80,40 Q85,50 75,60 Q70,45 50,45 Q30,45 25,60 Q15,50 20,40" />
+            <path d="M30,40 Q30,80 50,90 Q70,80 70,40" fill="#cbd5e1"/>
+            <circle cx="40" cy="85" r="2" fill="white" />
+            <circle cx="50" cy="88" r="2" fill="white" />
+            <circle cx="60" cy="85" r="2" fill="white" />
+            <path d="M10,95 Q10,80 30,85 L70,85 Q90,80 90,95 L90,120 L10,120 Z" />
+        </svg>
+    </div>
+
+    <div id="bg-layer" class="absolute inset-0 -z-10">
+        <div class="absolute top-0 left-1/4 w-[70%] h-[70%] bg-[var(--bg-gradient-1)] rounded-full mix-blend-multiply filter blur-[140px] opacity-50 transition-colors duration-800"></div>
+        <div class="absolute bottom-0 right-1/4 w-[70%] h-[70%] bg-[var(--bg-gradient-2)] rounded-full mix-blend-multiply filter blur-[140px] opacity-50 transition-colors duration-800"></div>
+    </div>
+
+    <main id="main-panel" class="glass-panel p-16 rounded-[60px] flex flex-col items-center max-w-lg w-full mx-4 shadow-2xl min-h-[550px] justify-center text-center">
+        
+        <div id="setup-view" class="w-full flex flex-col items-center p-4">
+            <div class="big-button-trigger text-5xl sm:text-7xl" id="start-btn">
+                Your Truth
+            </div>
+        </div>
+
+        <div id="active-view" class="hidden w-full flex-col items-center">
+            <div class="h-64 flex items-center justify-center relative">
+                <div id="orb" class="orb"></div>
+            </div>
+
+            <div class="w-full space-y-12 mt-12 px-6 flex flex-col items-center">
+                <div class="w-full h-[6px] bg-white/30 relative overflow-hidden rounded-full">
+                    <div id="progress" class="absolute left-0 top-0 h-full bg-[var(--bar-color)] w-0 transition-all ease-linear"></div>
+                </div>
+                <button id="lurid-btn" class="action-btn"></button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let audioCtx, masterGain, reverbNode, delayNode, feedbackNode;
+        let isRunning = false;
+        let isAgitated = false;
+        let isVoiding = false;
+        let isIroning = false;
+        let mainTimer = null;
+        let agitatedTimer = null;
+        
+        const vowels = {
+            'A': [700, 1200], 'E': [400, 2200], 'I': [300, 2500], 'O': [450, 800], 'U': [300, 700]
+        };
+
+        function createStars() {
+            const field = document.getElementById('star-field');
+            field.innerHTML = '';
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                field.appendChild(star);
+            }
+        }
+
+        async function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                reverbNode = audioCtx.createConvolver();
+                const length = audioCtx.sampleRate * 7;
+                const impulse = audioCtx.createBuffer(2, length, audioCtx.sampleRate);
+                for (let c = 0; c < 2; c++) {
+                    const data = impulse.getChannelData(c);
+                    for (let i = 0; i < length; i++) {
+                        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 3.2);
+                    }
+                }
+                reverbNode.buffer = impulse;
+
+                delayNode = audioCtx.createDelay(2.0);
+                delayNode.delayTime.value = 0.45;
+                feedbackNode = audioCtx.createGain();
+                feedbackNode.gain.value = 0.8;
+                delayNode.connect(feedbackNode);
+                feedbackNode.connect(delayNode);
+
+                masterGain = audioCtx.createGain();
+                masterGain.gain.value = 1.0; // Increased base volume
+                masterGain.connect(audioCtx.destination);
+                reverbNode.connect(masterGain);
+                delayNode.connect(masterGain);
+            }
+            
+            if (audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
+        }
+
+        function playSyllable(vowelName, duration = 1.2, mode = 'normal') {
+            if (!audioCtx || audioCtx.state !== 'running') return;
+            
+            const now = audioCtx.currentTime;
+            const frequencies = vowels[vowelName];
+            const source = audioCtx.createOscillator();
+            source.type = 'sawtooth';
+            
+            let pitch = 52;
+            if (mode === 'agitated') pitch = 85;
+            if (mode === 'void') pitch = 38; 
+            if (mode === 'iron') pitch = 220; 
+
+            source.frequency.setValueAtTime(pitch, now);
+            source.frequency.exponentialRampToValueAtTime(pitch * 0.95, now + duration);
+
+            const f1 = audioCtx.createBiquadFilter();
+            f1.type = 'bandpass';
+            f1.frequency.value = frequencies[0];
+            f1.Q.value = 22;
+
+            const f2 = audioCtx.createBiquadFilter();
+            f2.type = 'bandpass';
+            f2.frequency.value = frequencies[1];
+            f2.Q.value = 22;
+
+            const env = audioCtx.createGain();
+            env.gain.setValueAtTime(0, now);
+            
+            // Raised individual gains for higher impact
+            let peakGain = 0.7; 
+            if (mode === 'iron') peakGain = 0.5;
+            if (mode === 'void') peakGain = 0.6;
+
+            env.gain.linearRampToValueAtTime(peakGain, now + 0.05);
+            env.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+            source.connect(f1); source.connect(f2);
+            f1.connect(env); f2.connect(env);
+
+            if (mode === 'iron') {
+                env.connect(reverbNode);
+                const dry = audioCtx.createGain();
+                dry.gain.value = 0.5; // Increased dry mix
+                env.connect(dry);
+                dry.connect(masterGain);
+            } else if (mode === 'void') {
+                env.connect(delayNode);
+                const dry = audioCtx.createGain();
+                dry.gain.value = 0.45; // Increased dry mix
+                env.connect(dry);
+                dry.connect(masterGain);
+            } else {
+                if (mode === 'normal') env.connect(reverbNode);
+                env.connect(masterGain);
+            }
+
+            source.start(now);
+            source.stop(now + duration);
+        }
+
+        function speakNormal() {
+            if (!isRunning || isAgitated || isVoiding || isIroning) return;
+            const orb = document.getElementById('orb');
+            if (orb) orb.classList.add('active');
+            
+            const keys = Object.keys(vowels);
+            const isLongWord = Math.random() < 0.3; 
+            const syllableCount = isLongWord ? (Math.floor(Math.random() * 4) + 4) : 2;
+            
+            let currentSyllable = 0;
+            const playSyllableChain = () => {
+                if (currentSyllable >= syllableCount || isAgitated || isVoiding || isIroning) return;
+                
+                const v = keys[Math.floor(Math.random() * keys.length)];
+                const duration = isLongWord ? 0.7 : (currentSyllable === 0 ? 0.9 : 1.3);
+                
+                playSyllable(v, duration, 'normal');
+                currentSyllable++;
+                
+                if (currentSyllable < syllableCount) {
+                    setTimeout(playSyllableChain, isLongWord ? 500 : 700);
+                }
+            };
+
+            playSyllableChain();
+            
+            const baseDelay = isLongWord ? 10000 : 6000;
+            const delay = Math.floor(Math.random() * 5000) + baseDelay;
+            updateProgress(delay);
+            
+            setTimeout(() => { if(orb) orb.classList.remove('active'); }, isLongWord ? 5000 : 3500);
+            mainTimer = setTimeout(speakNormal, delay);
+        }
+
+        function speakFastLoop() {
+            if (!isAgitated || isVoiding || isIroning) return;
+            const orb = document.getElementById('orb');
+            if (orb) orb.classList.add('active');
+            
+            const keys = Object.keys(vowels);
+            const v = keys[Math.floor(Math.random() * keys.length)];
+            playSyllable(v, 0.2, 'agitated');
+            
+            setTimeout(() => { if(orb) orb.classList.remove('active'); }, 120);
+            agitatedTimer = setTimeout(speakFastLoop, 280);
+        }
+
+        function updateProgress(ms) {
+            const prog = document.getElementById('progress');
+            if (!prog) return;
+            prog.style.transition = 'none';
+            prog.style.width = '0%';
+            void prog.offsetWidth;
+            prog.style.transition = `width ${ms}ms linear`;
+            prog.style.width = '100%';
+        }
+
+        function triggerAgitation() {
+            if (isAgitated || isVoiding || isIroning) return;
+            isAgitated = true;
+            clearTimeout(mainTimer);
+            document.body.classList.add('lime-mode');
+            const duration = (Math.random() * 6 + 6) * 1000;
+            updateProgress(duration); 
+            speakFastLoop();
+            setTimeout(() => {
+                if (isVoiding || isIroning) return;
+                isAgitated = false;
+                clearTimeout(agitatedTimer);
+                document.body.classList.remove('lime-mode');
+                speakNormal();
+            }, duration);
+        }
+
+        async function triggerVoid() {
+            if (isVoiding || isIroning) return;
+            await initAudio();
+            isVoiding = true;
+            isRunning = false;
+            isAgitated = false;
+            clearTimeout(mainTimer);
+            clearTimeout(agitatedTimer);
+            
+            createStars();
+            document.body.classList.add('void-mode');
+            document.getElementById('star-field').style.opacity = '1';
+            document.getElementById('main-panel').classList.add('hidden-content');
+            document.querySelectorAll('.yellow-void-btn, .blue-tri-btn').forEach(b => b.style.opacity = '0');
+
+            const keys = Object.keys(vowels);
+            const v1 = keys[Math.floor(Math.random() * keys.length)];
+            const v2 = keys[Math.floor(Math.random() * keys.length)];
+            const repeatCount = Math.floor(Math.random() * 15) + 7;
+            let currentRepeat = 0;
+
+            function playVoidLoop() {
+                if (currentRepeat >= repeatCount) {
+                    setTimeout(() => {
+                        document.body.classList.remove('void-mode');
+                        document.getElementById('star-field').style.opacity = '0';
+                        document.getElementById('main-panel').classList.remove('hidden-content');
+                        document.querySelectorAll('.yellow-void-btn, .blue-tri-btn').forEach(b => b.style.opacity = '1');
+                        isVoiding = false;
+                        isRunning = true;
+                        if (document.getElementById('setup-view').classList.contains('hidden')) speakNormal();
+                    }, 2500);
+                    return;
+                }
+                playSyllable(v1, 0.45, 'void');
+                setTimeout(() => playSyllable(v2, 0.65, 'void'), 300);
+                currentRepeat++;
+                setTimeout(playVoidLoop, 1000);
+            }
+            playVoidLoop();
+        }
+
+        async function triggerIron() {
+            if (isIroning || isVoiding) return;
+            await initAudio();
+            isIroning = true;
+            isRunning = false;
+            isAgitated = false;
+            clearTimeout(mainTimer);
+            clearTimeout(agitatedTimer);
+
+            document.body.classList.add('iron-mode');
+            document.getElementById('main-panel').classList.add('hidden-content');
+            document.getElementById('iron-lady').style.opacity = '1';
+            document.querySelectorAll('.yellow-void-btn, .blue-tri-btn').forEach(b => b.style.opacity = '0');
+
+            const keys = Object.keys(vowels);
+            const word1 = keys[Math.floor(Math.random() * keys.length)];
+            const word2 = keys[Math.floor(Math.random() * keys.length)];
+            const word3 = keys[Math.floor(Math.random() * keys.length)];
+            
+            let currentRepeat = 0;
+
+            function playIronLoop() {
+                if (currentRepeat >= 8) {
+                    setTimeout(() => {
+                        document.body.classList.remove('iron-mode');
+                        document.getElementById('main-panel').classList.remove('hidden-content');
+                        document.getElementById('iron-lady').style.opacity = '0';
+                        document.querySelectorAll('.yellow-void-btn, .blue-tri-btn').forEach(b => b.style.opacity = '1');
+                        isIroning = false;
+                        isRunning = true;
+                        if (document.getElementById('setup-view').classList.contains('hidden')) speakNormal();
+                    }, 1500);
+                    return;
+                }
+                playSyllable(word1, 0.3, 'iron');
+                setTimeout(() => playSyllable(word2, 0.3, 'iron'), 400);
+                setTimeout(() => playSyllable(word3, 0.3, 'iron'), 800);
+                currentRepeat++;
+                setTimeout(playIronLoop, 1600);
+            }
+            playIronLoop();
+        }
+
+        document.getElementById('start-btn').addEventListener('click', async () => {
+            await initAudio();
+            document.getElementById('setup-view').classList.add('hidden');
+            document.getElementById('active-view').classList.remove('hidden');
+            document.getElementById('active-view').classList.add('flex');
+            isRunning = true;
+            speakNormal();
+        });
+
+        document.getElementById('lurid-btn').addEventListener('click', triggerAgitation);
+        document.getElementById('void-btn').addEventListener('click', triggerVoid);
+        document.getElementById('iron-btn').addEventListener('click', triggerIron);
+    </script>
+</body>
+</html>
+
